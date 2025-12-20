@@ -1,0 +1,42 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/deployment/Dockerfile.api
+    container_name: movie-api
+    env_file:
+      - src/deployment/.env
+    volumes:
+      - shared-logs:/app/logs
+    networks:
+      - app
+    ports:
+      - "8000:8000"
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: src/deployment/Dockerfile.streamlit
+    container_name: movie-ui
+    depends_on:
+      - api
+    networks:
+      - app
+    ports:
+      - "8501:8501"
+
+  drift:
+    build:
+      context: .
+      dockerfile: src/monitoring/Dockerfile.drift
+    container_name: drift-monitor
+    volumes:
+      - shared-logs:/app/logs
+    restart: "no"
+
+volumes:
+  shared-logs:
+
+networks:
+  app:
+   driver: bridge

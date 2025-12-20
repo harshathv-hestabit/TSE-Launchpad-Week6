@@ -1,0 +1,19 @@
+# FastAPI + Uvicorn
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# Streamlit UI
+streamlit
+
+# ML & data processing
+numpy
+pandas
+scipy
+joblib
+scikit-learn
+xgboost
+
+# Logging / utils
+python-dotenv

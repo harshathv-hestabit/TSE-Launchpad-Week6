@@ -1,0 +1,12 @@
+FROM python:3.12-slim
+
+WORKDIR /
+
+COPY src/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src/monitoring ./monitoring
+COPY src/data ./data
+COPY src/logs ./logs
+
+CMD ["python", "monitoring/drift_checker.py"]

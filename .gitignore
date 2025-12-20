@@ -1,0 +1,4 @@
+week6/
+.env
+__pycache__
+src/data/raw/
