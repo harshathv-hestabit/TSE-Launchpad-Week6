@@ -140,6 +140,7 @@ def main():
     best_score = -np.inf
 
     for name, model in models.items():
+        logger.info(f"Running CV for model: {name}")
         metrics = cross_validate(model, X_train, y_train)
         cv_metrics[name] = metrics
 
