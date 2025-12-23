@@ -31,12 +31,14 @@ services:
       dockerfile: src/monitoring/Dockerfile.drift
     container_name: drift-monitor
     volumes:
-      - shared-logs:/app/logs
+      - shared-logs:/app
+    environment:
+      LOG_PATH: /app
     restart: "no"
+
 
 volumes:
   shared-logs:
-
 networks:
   app:
    driver: bridge

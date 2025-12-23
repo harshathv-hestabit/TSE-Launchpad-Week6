@@ -13,11 +13,8 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data" / "processed"
-
-# Use shared Docker volume for logs, fallback to local path
-LOG_PATH = Path(os.getenv("LOG_PATH", "/app/logs/prediction_logs.csv"))
-EVAL_DIR = BASE_DIR / "evaluation"
-EVAL_DIR.mkdir(exist_ok=True)
+VOLUME_DIR = Path(os.getenv("LOG_PATH"))
+LOG_FILE = VOLUME_DIR / "prediction_logs.csv"
 
 NUMERIC_FEATURES = ["runtimeMinutes", "numVotes"]
 
@@ -31,7 +28,6 @@ GENRE_COLUMNS = [
 
 DRIFT_THRESHOLD_PVALUE = 0.05
 
-# JSON Encoder to handle numpy types
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (np.integer, np.int64)):
@@ -47,10 +43,10 @@ def load_reference_data():
     return X_train
 
 def load_prediction_data():
-    if not LOG_PATH.exists():
-        raise FileNotFoundError(f"prediction_logs.csv not found at {LOG_PATH}")
+    if not LOG_FILE.exists():
+        raise FileNotFoundError(f"prediction_logs.csv not found at {LOG_FILE}")
 
-    logs = pd.read_csv(LOG_PATH)
+    logs = pd.read_csv(LOG_FILE)
 
     data = {
         "runtimeMinutes": logs["runtimeMinutes"].astype(float),
@@ -103,11 +99,11 @@ def run_drift():
         "drift_report": drift_results
     }
 
-    with open(EVAL_DIR / "drift_report.json", "w") as f:
+    with open(VOLUME_DIR / "drift_report.json", "w") as f:
         json.dump(output, f, indent=4, cls=NpEncoder)
 
     print("Drift analysis completed")
-    print(f"Report saved to {EVAL_DIR / 'drift_report.json'}")
+    print(f"Report saved to {VOLUME_DIR / 'drift_report.json'}")
 
 if __name__ == "__main__":
     while True:
